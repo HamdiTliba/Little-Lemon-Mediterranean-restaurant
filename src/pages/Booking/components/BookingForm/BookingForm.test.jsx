@@ -1,17 +1,17 @@
 /* eslint-disable testing-library/no-wait-for-side-effects */
-import React from "react";
+import React from 'react';
 import {
   render,
   screen,
   fireEvent,
   renderHook,
   waitFor,
-} from "@testing-library/react";
-import { FormContextProvider, useForm } from "../../../../context";
+} from '@testing-library/react';
+import { FormContextProvider, useForm } from '../../../../context';
 
-import { BookingForm } from "./BookingForm";
-import { loadInitialState } from "../../../../actions";
-import { currentDateTime } from "../../../../utilities";
+import { BookingForm } from './BookingForm';
+import { loadInitialState } from '../../../../actions';
+import { currentDateTime } from '../../../../utilities';
 
 /*************************************************************************/
 /*** Setup Mocks */
@@ -19,16 +19,16 @@ import { currentDateTime } from "../../../../utilities";
 const state = loadInitialState();
 
 const dummyData = {
-  firstName: "John",
-  lastName: "Doe",
-  bookingDate: "2023-02-28",
-  bookingTime: "19:30",
-  guests: "5",
-  occasion: "birthday",
+  firstName: 'John',
+  lastName: 'Doe',
+  bookingDate: '2023-02-28',
+  bookingTime: '19:30',
+  guests: '5',
+  occasion: 'birthday',
 };
 
 const mockDispatch = jest.fn();
-const mockSubmit = jest.fn().mockImplementation((e) => e.preventDefault());
+const mockSubmit = jest.fn().mockImplementation(e => e.preventDefault());
 
 const wrapper = ({ children }) => (
   <FormContextProvider value={{ state, dispatch: mockDispatch }}>
@@ -39,18 +39,18 @@ const wrapper = ({ children }) => (
 /*****************************************************************************/
 /** Begin Tests */
 /*****************************************************************************/
-describe("components/BookingForm", () => {
-  describe("<BookingForm />", () => {
-    it("Rendered in the DOM", () => {
+describe('components/BookingForm', () => {
+  describe('<BookingForm />', () => {
+    it('Rendered in the DOM', () => {
       render(<BookingForm />);
-      const BookingFormEl = screen.getByRole("form");
+      const BookingFormEl = screen.getByRole('form');
       expect(BookingFormEl).toBeInTheDocument();
     });
 
-    it("Initial Props received via FormContextProvider", () => {
+    it('Initial Props received via FormContextProvider', () => {
       render(<BookingForm />, { wrapper });
-      const bookingDate = screen.getByLabelText("Booking Date");
-      const bookingTime = screen.getByLabelText("Booking Time");
+      const bookingDate = screen.getByLabelText('Booking Date');
+      const bookingTime = screen.getByLabelText('Booking Time');
 
       expect(bookingDate).toHaveValue(state.bookingDate);
       expect(bookingTime).toHaveValue(state.bookingTime);
@@ -60,16 +60,16 @@ describe("components/BookingForm", () => {
   /*****************************************************************************/
   /** Change Event on Form Fields */
   /*****************************************************************************/
-  describe("Changes to form fields are dispatched correctly to reflect state", () => {
+  describe('Changes to form fields are dispatched correctly to reflect state', () => {
     beforeEach(() => jest.clearAllMocks());
 
     /*****************************/
     /** Input type: Text  */
     /*****************************/
-    describe("Test changes to Input type: text", () => {
-      it("Test dispatch actions on field: firstName", async () => {
+    describe('Test changes to Input type: text', () => {
+      it('Test dispatch actions on field: firstName', async () => {
         render(<BookingForm onSubmit={mockSubmit} />, { wrapper });
-        const firstName = screen.getByLabelText("First Name");
+        const firstName = screen.getByLabelText('First Name');
 
         await waitFor(
           () => {
@@ -82,20 +82,20 @@ describe("components/BookingForm", () => {
 
         expect(mockDispatch).toHaveBeenCalledTimes(2);
         expect(mockDispatch).toHaveBeenCalledWith({
-          type: "setFormData",
+          type: 'setFormData',
           payload: {
             firstName: dummyData.firstName,
           },
         });
         expect(mockDispatch).toHaveBeenCalledWith({
-          type: "setFormErrors",
+          type: 'setFormErrors',
           payload: {
-            firstName: "",
+            firstName: '',
           },
         });
       });
 
-      it("Test error dispatch when value is empty and field required", async () => {
+      it('Test error dispatch when value is empty and field required', async () => {
         render(
           <FormContextProvider
             value={{
@@ -104,23 +104,24 @@ describe("components/BookingForm", () => {
                 formData: { ...state.formData, firstName: dummyData.firstName },
               },
               dispatch: mockDispatch,
-            }}>
+            }}
+          >
             <BookingForm onSubmit={mockSubmit} />
           </FormContextProvider>
         );
-        const firstName = screen.getByLabelText("First Name");
+        const firstName = screen.getByLabelText('First Name');
 
         await waitFor(
           () => {
             fireEvent.change(firstName, {
-              target: { value: "" },
+              target: { value: '' },
             }); // empty the field
           },
           { timeout: 1 }
         );
 
         expect(mockDispatch).toHaveBeenCalledWith({
-          type: "setFormErrors",
+          type: 'setFormErrors',
           payload: {
             firstName: `firstName is a required field!`,
           },
@@ -131,10 +132,10 @@ describe("components/BookingForm", () => {
     /*****************************/
     /** Input type: Date  */
     /*****************************/
-    describe("Test changes to Input type: date", () => {
-      it("Test dispatch actions on field: bookingDate", async () => {
+    describe('Test changes to Input type: date', () => {
+      it('Test dispatch actions on field: bookingDate', async () => {
         render(<BookingForm onSubmit={mockSubmit} />, { wrapper });
-        const bookingDate = screen.getByLabelText("Booking Date");
+        const bookingDate = screen.getByLabelText('Booking Date');
 
         await waitFor(
           () => {
@@ -147,26 +148,26 @@ describe("components/BookingForm", () => {
 
         expect(mockDispatch).toHaveBeenCalledTimes(3);
         expect(mockDispatch).toHaveBeenCalledWith({
-          type: "setAvailableTimes",
+          type: 'setAvailableTimes',
           payload: new Date(dummyData.bookingDate),
         });
         expect(mockDispatch).toHaveBeenCalledWith({
-          type: "setFormData",
+          type: 'setFormData',
           payload: {
             bookingDate: dummyData.bookingDate,
           },
         });
         expect(mockDispatch).toHaveBeenCalledWith({
-          type: "setFormErrors",
+          type: 'setFormErrors',
           payload: {
-            bookingDate: "",
+            bookingDate: '',
           },
         });
       });
 
-      it("Test dispatch actions on bookingDate when date is older than current", async () => {
+      it('Test dispatch actions on bookingDate when date is older than current', async () => {
         render(<BookingForm onSubmit={mockSubmit} />, { wrapper });
-        const bookingDate = screen.getByLabelText("Booking Date");
+        const bookingDate = screen.getByLabelText('Booking Date');
 
         await waitFor(
           () => {
@@ -178,9 +179,9 @@ describe("components/BookingForm", () => {
         );
 
         expect(mockDispatch).toHaveBeenCalledWith({
-          type: "setFormErrors",
+          type: 'setFormErrors',
           payload: {
-            bookingDate: "You need to book at least a day in advance",
+            bookingDate: 'You need to book at least a day in advance',
           },
         });
       });
@@ -189,10 +190,10 @@ describe("components/BookingForm", () => {
     /*****************************/
     /** Booking Time  */
     /*****************************/
-    it("Test dispatch actions on field: bookingTime", async () => {
+    it('Test dispatch actions on field: bookingTime', async () => {
       render(<BookingForm onSubmit={mockSubmit} />, { wrapper });
 
-      const bookingTime = screen.getByLabelText("Booking Time");
+      const bookingTime = screen.getByLabelText('Booking Time');
 
       await waitFor(
         () => {
@@ -206,23 +207,23 @@ describe("components/BookingForm", () => {
       );
 
       expect(mockDispatch).toHaveBeenCalledWith({
-        type: "setIsDirty",
+        type: 'setIsDirty',
         payload: {
           bookingTime: true,
         },
       });
 
       expect(mockDispatch).toHaveBeenCalledWith({
-        type: "setFormData",
+        type: 'setFormData',
         payload: {
           bookingTime: dummyData.bookingTime,
         },
       });
 
       expect(mockDispatch).toHaveBeenCalledWith({
-        type: "setFormErrors",
+        type: 'setFormErrors',
         payload: {
-          bookingTime: "",
+          bookingTime: '',
         },
       });
     });
@@ -230,11 +231,11 @@ describe("components/BookingForm", () => {
     /*****************************/
     /** Input type: Number  */
     /*****************************/
-    describe("Test changes to Input type: number", () => {
-      it("Test dispatch actions on field: guests", async () => {
+    describe('Test changes to Input type: number', () => {
+      it('Test dispatch actions on field: guests', async () => {
         render(<BookingForm onSubmit={mockSubmit} />, { wrapper });
 
-        const guests = screen.getByLabelText("Number of Guests");
+        const guests = screen.getByLabelText('Number of Guests');
 
         await waitFor(
           () => {
@@ -248,49 +249,49 @@ describe("components/BookingForm", () => {
         );
 
         expect(mockDispatch).toHaveBeenCalledWith({
-          type: "setFormData",
+          type: 'setFormData',
           payload: {
             guests: dummyData.guests,
           },
         });
         expect(mockDispatch).toHaveBeenCalledWith({
-          type: "setFormErrors",
+          type: 'setFormErrors',
           payload: {
-            guests: "",
+            guests: '',
           },
         });
       });
 
-      it("Test dispatch on empty number field", async () => {
+      it('Test dispatch on empty number field', async () => {
         render(<BookingForm onSubmit={mockSubmit} />, { wrapper });
 
-        const guests = screen.getByLabelText("Number of Guests");
-        const min = guests.getAttribute("min");
-        const max = guests.getAttribute("max");
-        const name = guests.getAttribute("name");
+        const guests = screen.getByLabelText('Number of Guests');
+        const min = guests.getAttribute('min');
+        const max = guests.getAttribute('max');
+        const name = guests.getAttribute('name');
 
         await waitFor(() => {
-          fireEvent.change(guests, { target: { value: "" } });
+          fireEvent.change(guests, { target: { value: '' } });
         });
 
         expect(mockDispatch).toHaveBeenCalledTimes(2);
         expect(mockDispatch).toHaveBeenCalledWith({
-          type: "setFormErrors",
+          type: 'setFormErrors',
           payload: { guests: `Limit: ${min} - ${max} ${name}.` },
         });
         expect(mockDispatch).toHaveBeenCalledWith({
-          type: "setFormData",
-          payload: { guests: "" },
+          type: 'setFormData',
+          payload: { guests: '' },
         });
       });
 
-      it("Test attempted changeEvent for number outside min-max range", async () => {
+      it('Test attempted changeEvent for number outside min-max range', async () => {
         render(<BookingForm onSubmit={mockSubmit} />, { wrapper });
 
-        const guests = screen.getByLabelText("Number of Guests");
+        const guests = screen.getByLabelText('Number of Guests');
 
         await waitFor(() => {
-          fireEvent.change(guests, { target: { value: "1000" } });
+          fireEvent.change(guests, { target: { value: '1000' } });
         });
         expect(mockDispatch).not.toBeCalled();
       });
@@ -299,10 +300,10 @@ describe("components/BookingForm", () => {
     /*****************************/
     /** Occasion  */
     /*****************************/
-    it("Test dispatch actions on field: occasion", async () => {
+    it('Test dispatch actions on field: occasion', async () => {
       render(<BookingForm onSubmit={mockSubmit} />, { wrapper });
 
-      const occasion = screen.getByLabelText("Occasion");
+      const occasion = screen.getByLabelText('Occasion');
 
       await waitFor(
         () => {
@@ -316,23 +317,23 @@ describe("components/BookingForm", () => {
       );
 
       expect(mockDispatch).toHaveBeenCalledWith({
-        type: "setIsDirty",
+        type: 'setIsDirty',
         payload: {
           occasion: true,
         },
       });
 
       expect(mockDispatch).toHaveBeenCalledWith({
-        type: "setFormData",
+        type: 'setFormData',
         payload: {
           occasion: dummyData.occasion,
         },
       });
 
       expect(mockDispatch).toHaveBeenCalledWith({
-        type: "setFormErrors",
+        type: 'setFormErrors',
         payload: {
-          occasion: "",
+          occasion: '',
         },
       });
     });
@@ -341,18 +342,18 @@ describe("components/BookingForm", () => {
   /*****************************************************************************/
   /** Submit form */
   /*****************************************************************************/
-  describe("Submit the Form", () => {
+  describe('Submit the Form', () => {
     beforeEach(() => jest.clearAllMocks());
 
-    it("Test the Submit Button", async () => {
+    it('Test the Submit Button', async () => {
       render(<BookingForm onSubmit={mockSubmit} />, { wrapper });
 
-      const firstName = screen.getByLabelText("First Name");
-      const lastName = screen.getByLabelText("Last Name");
-      const bookingDate = screen.getByLabelText("Booking Date");
-      const bookingTime = screen.getByLabelText("Booking Time");
-      const guests = screen.getByLabelText("Number of Guests");
-      const occasion = screen.getByLabelText("Occasion");
+      const firstName = screen.getByLabelText('First Name');
+      const lastName = screen.getByLabelText('Last Name');
+      const bookingDate = screen.getByLabelText('Booking Date');
+      const bookingTime = screen.getByLabelText('Booking Time');
+      const guests = screen.getByLabelText('Number of Guests');
+      const occasion = screen.getByLabelText('Occasion');
 
       await waitFor(
         () => {
@@ -381,7 +382,7 @@ describe("components/BookingForm", () => {
       // Click Submit Button
       await waitFor(() =>
         fireEvent.submit(
-          screen.getByRole("button", { name: "View Availability" })
+          screen.getByRole('button', { name: 'View Availability' })
         )
       );
 
@@ -393,12 +394,12 @@ describe("components/BookingForm", () => {
   /** Blur Event on Form Fields */
   /*****************************************************************************/
 
-  describe("Blur events are dispatched correctly to reflect errors", () => {
+  describe('Blur events are dispatched correctly to reflect errors', () => {
     beforeEach(() => jest.clearAllMocks());
 
-    it("Test dispatch on dirty, required field", async () => {
+    it('Test dispatch on dirty, required field', async () => {
       render(<BookingForm onSubmit={mockSubmit} />, { wrapper });
-      const firstName = screen.getByLabelText("First Name");
+      const firstName = screen.getByLabelText('First Name');
 
       await waitFor(() => {
         fireEvent.focusIn(firstName);
@@ -407,8 +408,8 @@ describe("components/BookingForm", () => {
       });
 
       expect(mockDispatch).toHaveBeenCalledWith({
-        type: "setFormErrors",
-        payload: { firstName: "firstName is a required field!" },
+        type: 'setFormErrors',
+        payload: { firstName: 'firstName is a required field!' },
       });
     });
   });
@@ -416,8 +417,8 @@ describe("components/BookingForm", () => {
   /*****************************************************************************/
   /** Render the useForm hook correctly */
   /*****************************************************************************/
-  describe("Render useForm() correctly", () => {
-    it("Should return the state and mockDispatch correctly", () => {
+  describe('Render useForm() correctly', () => {
+    it('Should return the state and mockDispatch correctly', () => {
       const mockUseContext = jest.fn().mockImplementation(() => ({
         state,
         mockDispatch,
