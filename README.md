@@ -29,7 +29,7 @@ This Booking App was created as the final capstone project of the **Meta Front-E
 
 ```s
 # Run in the Terminal
-git clone https://github.com/jayantasamaddar/little-lemon-meta-frontend-capstone.git folder
+git clone https://github.com/HamdiTliba/Little-Lemon-Mediterranean-restaurant.git folder
 
 # Install Dependencies
 npm install
@@ -154,7 +154,7 @@ There following Design Patterns have been followed:
   **Example**:
 
   ```jsx
-  import { Table } from './components';
+  import { Table } from "./components";
 
   const CustomTable = () => {
     return (
